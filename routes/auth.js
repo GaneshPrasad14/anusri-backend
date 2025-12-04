@@ -23,7 +23,7 @@ router.post('/login', async (req, res) => {
     // Create JWT token
     const token = jwt.sign(
       { userId: 'admin', username: adminCredentials.username },
-      'your_jwt_secret_key',
+      process.env.JWT_SECRET || 'anusri-apparels-jwt-secret-2024-secure-production-key-abcdef1234567890',
       { expiresIn: '24h' }
     );
 
