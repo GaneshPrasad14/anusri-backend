@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, 'your_jwt_secret_key');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'anusri-apparels-jwt-secret-2024-secure-production-key-abcdef1234567890');
     req.user = decoded.user;
     next();
   } catch (error) {
