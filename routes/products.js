@@ -2,6 +2,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import Product from '../models/Product.js';
+import Order from '../models/Order.js';
 import authMiddleware from '../middleware/auth.js';
 import Razorpay from 'razorpay';
 
@@ -182,6 +183,37 @@ router.post('/verify-payment', async (req, res) => {
   } catch (error) {
     console.error('Error verifying payment:', error);
     res.status(500).json({ message: 'Error verifying payment' });
+  }
+});
+
+// Create order record
+router.post('/create-order-record', async (req, res) => {
+  try {
+    const { customer, items, total, paymentMethod, paymentStatus, razorpayOrderId, razorpayPaymentId } = req.body;
+
+    const orderItems = items.map(item => ({
+      productId: item._id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.images && item.images.length > 0 ? item.images[0] : item.image || ''
+    }));
+
+    const order = new Order({
+      customer,
+      items: orderItems,
+      total,
+      paymentMethod,
+      paymentStatus,
+      razorpayOrderId,
+      razorpayPaymentId
+    });
+
+    const savedOrder = await order.save();
+    res.status(201).json(savedOrder);
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(500).json({ message: 'Error creating order' });
   }
 });
 
